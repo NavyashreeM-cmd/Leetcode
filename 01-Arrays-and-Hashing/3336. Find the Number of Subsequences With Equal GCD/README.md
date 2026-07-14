@@ -76,31 +76,33 @@
 ---
 
 # 🛍️ Find-the-Number-of-Subsequences-With-Equal-GCD | Explained
+The provided code is a solution to the LeetCode problem "Find-the-Number-of-Subsequences-With-Equal-GCD". This problem requires finding the number of pairs of subsequences from a given array that have equal greatest common divisors (GCDs).
 
-## Approach 1: DP with Precomputed GCD
+## Approach 1 (Dynamic Programming with GCD Precomputation)
 ### Intuition
-The intuition behind this approach is to utilize dynamic programming (DP) to track the number of subsequences with a given GCD, and then leverage the concept of precomputing the GCD for all possible pairs of numbers to avoid redundant compute. Think of it like a game where you're building sequences, one number at a time, and at each step, you're either deciding to add a number to the first sequence, the second sequence, or neither, and you're keeping track of the GCD of these sequences as you go. This works because it systematically explores all possible subsequences in a controlled manner, allowing the computation of GCDs to be efficiently managed.
+This approach works by using dynamic programming to track the number of subsequences with each possible GCD. The key idea is to precompute the GCDs of all possible pairs of numbers from 0 to 200, which is the maximum possible GCD for any subsequence. This allows us to quickly determine the new GCD when adding a new element to a subsequence. The approach is similar to a breadth-first search, where we expand the search space by adding one element at a time and updating the GCD counts accordingly.
 
 ### Approach
-The algorithmic breakdown involves the following high-level steps:
-1. Initialize a DP table `dp` of size 201x201 to store the number of subsequences with a given GCD, where `dp[g1][g2]` represents the number of subsequences with GCDs `g1` and `g2` for the first and second sequences, respectively.
-2. Precompute the GCD for all pairs of numbers from 0 to 200 and store them in a `gcdDP` table. This step is performed to avoid redundant computation of GCDs during the DP iteration.
-3. Iterate through each number in the input array. For each number, iterate through all possible GCDs `g1` and `g2` for the first and second sequences, respectively.
-4. For each pair of GCDs `g1` and `g2`, update the next state `nextDP` by considering the current state `dp[g1][g2]` and applying the operations: skip (do nothing), add to the first sequence, and add to the second sequence. Update `nextDP` accordingly based on these operations, ensuring the result is taken modulo `mod` to prevent overflow.
-5. After updating `nextDP`, copy its values back to `dp` to prepare for the next iteration.
-6. Finally, compute the answer by summing the values in `dp` where the two GCDs are equal (`dp[g][g]`).
+1. Precompute the GCDs of all possible pairs of numbers from 0 to 200.
+2. Initialize a dynamic programming (DP) table to store the count of subsequences with each possible GCD.
+3. Iterate through the input array, and for each element, update the DP table by considering three possibilities: 
+   - Skip the current element.
+   - Add the current element to the first subsequence.
+   - Add the current element to the second subsequence.
+4. After iterating through the entire input array, compute the final answer by summing the counts of subsequences with equal GCDs.
 
 ### Detailed Code Analysis
-- The solution starts by defining a class `Solution` and initializing a `mod` variable set to 1,000,000,007, which is used to prevent integer overflow by taking the result modulo `mod` at each step. It also defines a `gcd` function to compute the greatest common divisor of two numbers using the Euclidean algorithm.
-- A 2D DP table `dp` of size 202x202 is initialized to store the number of subsequences with a given GCD, and `dp[0][0]` is set to 1 as the base case, representing the empty subsequence.
-- A precomputed GCD table `gcdDP` of size 201x201 is filled with the GCDs of all pairs of numbers from 0 to 200. This table is used to quickly look up the GCD of any two numbers without having to compute it from scratch.
-- The main computation is performed within two nested loops that iterate over each number in the input array and then over all possible GCDs for the first and second sequences. For each iteration, a temporary `nextDP` table is updated based on the current state `dp` and the operations applied to the sequences.
-- After each iteration, the values from `nextDP` are copied back to `dp` to prepare for the next iteration.
-- Finally, the answer is computed by summing the values in `dp` where the GCDs are equal (`dp[g][g]`), and the result is returned as an integer.
+The code starts by defining a `gcd` function to compute the greatest common divisor of two numbers using the Euclidean algorithm (lines 3-6). It then initializes a `mod` variable to store the modulo value for avoiding overflow (line 2).
+
+The `subsequencePairCount` function initializes a DP table `dp` to store the count of subsequences with each possible GCD (lines 9-11). It also precomputes the GCDs of all possible pairs of numbers from 0 to 200 and stores them in the `gcdDP` table (lines 13-16).
+
+The main loop of the algorithm iterates through the input array, and for each element, it updates the DP table using a temporary `nextDP` table (lines 18-41). The `nextDP` table is used to store the updated counts of subsequences with each possible GCD after considering the current element.
+
+Finally, the code computes the final answer by summing the counts of subsequences with equal GCDs (lines 43-47).
 
 ### Code
 ```java
-long mod = 1_000_000_007;
+long mod = 1_000_000_007; 
 int gcd(int a, int b) {
     if(b == 0) return a; 
     return gcd(b, a % b); 
@@ -109,7 +111,7 @@ int gcd(int a, int b) {
 public int subsequencePairCount(int[] nums) {
     long[][] dp = new long[202][202];
     int n = nums.length; 
-    dp[0][0] = 1;
+    dp[0][0] = 1; 
 
     int[][] gcdDP = new int[201][201]; 
     for(int i = 0; i <= 200; i++) {
@@ -134,7 +136,7 @@ public int subsequencePairCount(int[] nums) {
                 dp[x][j] = nextDP[x][j]; 
             }
         }
-    }
+    } 
 
     long ans = 0; 
     for(int g = 1; g <= 200; g++) {
@@ -145,12 +147,12 @@ public int subsequencePairCount(int[] nums) {
 ```
 
 ### Complexity
-- Time: The time complexity can be broken down into the precomputation of the GCD table, which takes O(201^2) time, and the main DP iteration, which takes O(n * 201^2) time. Therefore, the overall time complexity is O(n * 201^2), where n is the length of the input array.
-- Space: The space complexity is dominated by the DP table `dp` and the precomputed GCD table `gcdDP`, both of which require O(201^2) space. Therefore, the overall space complexity is O(201^2).
+- Time: O(n \* 200^2), where n is the length of the input array. This is because we iterate through the input array and for each element, we update the DP table by considering all possible pairs of GCDs.
+- Space: O(200^2), where 200 is the maximum possible GCD. This is because we need to store the precomputed GCDs and the DP table.
 
 ## 🕵️‍♂️ Follow-up Questions (Optional)
-1. **How would you optimize this solution for very large input arrays?** 
-   - One optimization could be to limit the size of the DP table based on the range of values in the input array, rather than always using a 201x201 table. Additionally, using a more efficient GCD computation method or data structure could further improve performance.
-
-2. **What are the implications of using a modulo operation throughout the computation?** 
-   - The modulo operation prevents integer overflow by ensuring that the intermediate results do not exceed the maximum limit. However, it also introduces the possibility of losing precision in the final result if the modulo operation is not correctly managed throughout the computation. In this case, since the modulo is consistently applied and the final result is cast to an integer, the impact is controlled.
+Some possible follow-up questions for this problem are:
+1. How can you optimize the algorithm to handle larger input arrays?
+   - One possible optimization is to use a more efficient algorithm for precomputing the GCDs, such as using a sieve-based approach.
+2. Can you modify the algorithm to handle cases where the GCDs are not limited to 200?
+   - One possible approach is to use a data structure such as a hash table to store the GCDs, allowing for arbitrary GCD values. However, this would likely increase the time and space complexity of the algorithm.
