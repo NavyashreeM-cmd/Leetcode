@@ -1,0 +1,1 @@
+            if (digit > max1) {                max2 = max1;                max1 = digit;            } else if (digit > max2) {                max2 = digit;        while (n > 0) {            int digit = n % 10;        int max2 = 0; // Second largest digit    public int maxProduct(int n) {        int max1 = 0; // Largest digitclass Solution {
